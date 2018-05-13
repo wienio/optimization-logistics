@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,7 +9,52 @@
     <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
     <script src="bundle.js"></script>
 </head>
+
 <body>
-    
+    <h1>Rozkrój jednowymiarowy</h1>
+    <div class="initial-values">
+        <div>
+            <label for="pipe-length">Długość jednej sztangi:</label>
+            <input type="text" id="pipe-length" placeholder="[m]">
+        </div>
+        <div>
+            <label for="pipe-waste-cost">Cena 1m odpadów:</label>
+            <input type="text" id="pipe-waste-cost" placeholder="[zł]">
+        </div>
+        <div>
+            <label for="sets-amount">Zamówiona ilość:</label>
+            <input type="text" id="sets-amount" placeholder="I">
+            <input type="text" id="sets-amount2" placeholder="II">
+        </div>
+    </div>
+    <div class="table">
+        <div id="method-iterator" class="row">
+            <div>
+                <h3>Długości rurek</h3>
+            </div>
+        </div>
+        <div id="first-method" class="row">
+            <div>
+                <input type="text" required="true" placeholder="Długość I" />
+            </div>
+        </div>
+        <div id="second-method" class="row">
+            <div>
+                <input type="text" required="true" placeholder="Długość II" />
+            </div>
+        </div>
+        <div id="waste-meters" class="row">
+            <div>
+                <h3>Odpad w metrach:</h3>
+            </div>
+        </div>
+        <div id="waste-pln" class="row">
+            <div>
+                <h3>Strata w złotych:</h3>
+            </div>
+        </div>
+    </div>
+    <button id="calculate">Oblicz</button>
 </body>
+
 </html>

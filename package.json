@@ -9,6 +9,7 @@
   "author": "Kamil Wieniecki",
   "license": "ISC",
   "dependencies": {
-    "browserify": "^16.2.0"
+    "browserify": "^16.2.0",
+    "javascript-lp-solver": "^0.4.5"
   }
 }

@@ -1,38 +1,55 @@
 const config = require('./config')
-const CutMethod = require('./cutMethod')
+const solver = require('javascript-lp-solver')
 
-const addition = (a, b) => {
-    return a + b
+let foo = {
+    [`bar` + 1]: `baz`
+};
+
+let model = {
+    "optimize": "waste",
+    "opType": "min",
+    "constraints": {
+        "cutA": { "min": 2100 },
+        "cutB": { "min": 1200 }
+    },
+    "variables": {
+        "x1": { "cutA": 7, "cutB": 0, "waste": 0.3 },
+        "x2": { "cutA": 6, "cutB": 0, "waste": 1 },
+        "x3": { "cutA": 5, "cutB": 0, "waste": 1.7 },
+        "x4": { "cutA": 4, "cutB": 0, "waste": 2.4 },
+        "x5": { "cutA": 3, "cutB": 1, "waste": 0.6 },
+        "x6": { "cutA": 2, "cutB": 1, "waste": 1.3 },
+        "x7": { "cutA": 1, "cutB": 1, "waste": 2 },
+        "x8": { "cutA": 0, "cutB": 2, "waste": 0.2 }
+    }
 }
 
-const minimum = (a, b) => {
-    return Math.min(a, b)
-}
+console.log(solver.Solve(model));
 
-var allMethods = []
+document.addEventListener('DOMContentLoaded', () => {
+    let inputType = '<input type="text"/>'
 
-// pipes length
-var firstLength = 0.8
-var secondLength = 1.1
+    for (let i = 1; i <= config.columns; ++i) {
+        let textMethod = `<h4>Sposób ${i}</h4>`
 
-// orders
-var firstOrderAmount = 400
-var secondOrderAmount = 1200
+        let divArray = []
 
-// ways of cutting
-var firstCut = [5, 4, 2, 1, 0]
-var secondCut = [0, 1, 2, 3, 4]
+        for (let j = 0; j < config.rows; ++j) {
+            divArray.push(document.createElement('div'))
+            divArray[j].className = 'cell'
 
-// wastes
-var wasteInMeters = [0.4, 0.1, 0.6, 0.3, 0]
-var wasteInPLN = [8, 2, 12, 6, 0]
+            if (divArray.length !== 1) {
+                divArray[j].innerHTML = inputType
+            } else {
+                divArray[j].innerHTML = textMethod
+            }
+        }
 
-/*
-look for linear programming (simpleks method?)
-*/
+        let rows = document.getElementsByClassName('row')
 
-var result = firstCut.reduce(addition)
+        divArray.forEach((elem, index) => {
+            rows[index].appendChild(elem)
+        })
 
-var method1 = new CutMethod('sss', 1, 2)
-
-console.log(method1)
+    }
+}, false)
