@@ -1,4 +1,4 @@
 module.exports = {
     rows: 5,
-    columns: 7
+    columns: 5
 }

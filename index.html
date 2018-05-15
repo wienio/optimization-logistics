@@ -4,10 +4,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Page Title</title>
+    <title>Rozkrój jednowymiarowy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
-    <script src="bundle.js"></script>
 </head>
 
 <body>
@@ -23,8 +22,8 @@
         </div>
         <div>
             <label for="sets-amount">Zamówiona ilość:</label>
-            <input type="text" id="sets-amount" placeholder="I">
-            <input type="text" id="sets-amount2" placeholder="II">
+            <input type="text" id="set-amount1" placeholder="I">
+            <input type="text" id="set-amount2" placeholder="II">
         </div>
     </div>
     <div class="table">
@@ -35,12 +34,12 @@
         </div>
         <div id="first-method" class="row">
             <div>
-                <input type="text" required="true" placeholder="Długość I" />
+                <input id="first-length" type="text" required="true" placeholder="Długość I" />
             </div>
         </div>
         <div id="second-method" class="row">
             <div>
-                <input type="text" required="true" placeholder="Długość II" />
+                <input id="second-length" type="text" required="true" placeholder="Długość II" />
             </div>
         </div>
         <div id="waste-meters" class="row">
@@ -54,7 +53,10 @@
             </div>
         </div>
     </div>
-    <button id="calculate">Oblicz</button>
+    <button id="calc-wastes">Policz straty</button>
+    <button id="calc-model" disabled="true">Oblicz</button>
+
+    <script src="bundle.js"></script>
 </body>
 
 </html>

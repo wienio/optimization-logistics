@@ -53,6 +53,11 @@ button {
     cursor: pointer;
     font-size: 1.8rem;
     color: #fFFFFF;
+    box-shadow: 5px 5px 15px 0px rgb(0, 0, 0, 0.75);
+}
+
+button:disabled {
+    cursor: not-allowed;
 }
 
 .initial-values {
