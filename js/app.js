@@ -10,7 +10,8 @@ let foo = {
 let model2 = {
     'optimize': 'wastePLN',
     'opType': 'min',
-    "variables": {}
+    'variables': {},
+    'constraints': {}
 }
 
 let model = {
@@ -32,7 +33,8 @@ let model = {
     }
 }
 
-console.log(solver.Solve(model));
+console.log(model)
+// console.log(solver.Solve(model));
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -43,10 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let j = 0; j < config.rows; ++j) {
             divArray.push(document.createElement('div'))
             divArray[j].className = 'cell'
-            
+
             let inputType = '<input placeholder="0" type="text" id="'
 
-            switch(j) {
+            switch (j) {
                 case 1:
                     inputType += 'cut-first-method' + i
                     break
@@ -85,14 +87,14 @@ let saveConstants = () => {
     let firstLength = document.getElementById('first-length')
     let secondLength = document.getElementById('second-length')
 
-    if(pipeLength.value && priceOfWastePer1m.value && orderedAmountSet1.value && orderedAmountSet2.value && firstLength.value && secondLength.value) {
+    if (pipeLength.value && priceOfWastePer1m.value && orderedAmountSet1.value && orderedAmountSet2.value && firstLength.value && secondLength.value) {
         let constants = {
-            'totalLength': Number (pipeLength.value),
-            'pricePer1mWaste': Number (priceOfWastePer1m.value),
-            'set1Amount': Number (orderedAmountSet1.value),
-            'set2Amount': Number (orderedAmountSet2.value),
-            'firstLength': Number (firstLength.value),
-            'secondLength': Number (secondLength.value)
+            'totalLength': Number(pipeLength.value),
+            'pricePer1mWaste': Number(priceOfWastePer1m.value),
+            'set1Amount': Number(orderedAmountSet1.value),
+            'set2Amount': Number(orderedAmountSet2.value),
+            'firstLength': Number(firstLength.value),
+            'secondLength': Number(secondLength.value)
         }
         return constants
     }
@@ -100,27 +102,27 @@ let saveConstants = () => {
 
 let calcMethods = () => {
 
-    let variables = { }
+    let variables = {}
 
-    if(constants.firstLength > constants.totalLength || constants.secondLength > constants.totalLength) {
+    if (constants.firstLength > constants.totalLength || constants.secondLength > constants.totalLength) {
         alert('Podane długości belek są błędne!')
         return
     }
 
-    for(let i = 1 ; i <= config.columns; ++i) {
-        let firstCutAmount = Number (document.getElementById('cut-first-method' + i).value)
-        let secondCutAmount = Number (document.getElementById('cut-second-method' + i).value)
+    for (let i = 1; i <= config.columns; ++i) {
+        let firstCutAmount = Number(document.getElementById('cut-first-method' + i).value)
+        let secondCutAmount = Number(document.getElementById('cut-second-method' + i).value)
 
-        let firstCuttingLength = firstCutAmount * constants.firstLength 
+        let firstCuttingLength = firstCutAmount * constants.firstLength
         let secondCuttingLength = secondCutAmount * constants.secondLength
 
-        if(firstCuttingLength + secondCuttingLength > constants.totalLength) {
+        if (firstCuttingLength + secondCuttingLength > constants.totalLength) {
             alert('Wprowadzono błędne sposoby cięcia! Za krótka belka do cięcia w podany sposób.')
             return
         }
 
-        let totalWaste = Number ((constants.totalLength - firstCuttingLength - secondCuttingLength).toFixed(2))
-        let totalCostWaste = Number ((constants.pricePer1mWaste * totalWaste).toFixed(2))
+        let totalWaste = Number((constants.totalLength - firstCuttingLength - secondCuttingLength).toFixed(2))
+        let totalCostWaste = Number((constants.pricePer1mWaste * totalWaste).toFixed(2))
 
         let cutWasteMeter = document.getElementById('cut-waste-meters' + i)
         let cutWasteCost = document.getElementById('cut-waste-cost' + i)
@@ -141,10 +143,15 @@ let calcMethods = () => {
         model2.variables[`x${i}`] = variable
     }
 
-    model2['constraints'] = {
-        'cutA': constants.set1Amount,
-        'cutB': constants.set2Amount
+    let cutA = {
+        'min': constants.set1Amount
     }
+    let cutB = {
+        'min': constants.set2Amount
+    }
+
+    model2.constraints['cutA'] = cutA
+    model2.constraints['cutB'] = cutB
 
     console.log(model2)
 }
@@ -152,7 +159,7 @@ let calcMethods = () => {
 document.getElementById('calc-wastes').addEventListener('click', () => {
     constants = saveConstants();
 
-    if(!constants) {
+    if (!constants) {
         alert('Uzupełnij początkowe dane!')
         return
     }
@@ -163,5 +170,9 @@ document.getElementById('calc-wastes').addEventListener('click', () => {
 }, false)
 
 document.getElementById('calc-model').addEventListener('click', () => {
+    debugger
+    let result = solver.Solve(model2)
+
+    console.log(result)
 
 }, false)
