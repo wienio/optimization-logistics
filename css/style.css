@@ -86,15 +86,22 @@ button:disabled {
     flex-direction: row;
 }
 
-/* #first-method div {
-    width: 200px;
-    flex-direction: column;
-} */
-
 .table div div:first-child {
     flex-basis: 220px;
 }
 
 .cell {
     flex-basis: 200px;
+}
+
+.result-text {
+    font-size: 3rem;
+    padding-left: 30px;
+    padding-top: 60px;
+}
+
+#result {
+    font-size: 2rem;
+    padding-left: 40px;
+    padding-top: 30px;
 }

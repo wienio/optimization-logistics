@@ -4,36 +4,12 @@ const solver = require('javascript-lp-solver')
 
 let constants
 
-let foo = {
-    [`bar` + 1]: `baz`
-};
-
-let model2 = {
+let model = {
     'optimize': 'wastePLN',
     'opType': 'min',
-    "variables": {}
+    'variables': {},
+    'constraints': {}
 }
-
-let model = {
-    "optimize": "waste",
-    "opType": "min",
-    "constraints": {
-        "cutA": { "min": 2100 },
-        "cutB": { "min": 1200 }
-    },
-    "variables": {
-        "x1": { "cutA": 7, "cutB": 0, "waste": 0.3 },
-        "x2": { "cutA": 6, "cutB": 0, "waste": 1 },
-        "x3": { "cutA": 5, "cutB": 0, "waste": 1.7 },
-        "x4": { "cutA": 4, "cutB": 0, "waste": 2.4 },
-        "x5": { "cutA": 3, "cutB": 1, "waste": 0.6 },
-        "x6": { "cutA": 2, "cutB": 1, "waste": 1.3 },
-        "x7": { "cutA": 1, "cutB": 1, "waste": 2 },
-        "x8": { "cutA": 0, "cutB": 2, "waste": 0.2 }
-    }
-}
-
-console.log(solver.Solve(model));
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -44,10 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let j = 0; j < config.rows; ++j) {
             divArray.push(document.createElement('div'))
             divArray[j].className = 'cell'
-            
+
             let inputType = '<input placeholder="0" type="text" id="'
 
-            switch(j) {
+            switch (j) {
                 case 1:
                     inputType += 'cut-first-method' + i
                     break
@@ -86,14 +62,14 @@ let saveConstants = () => {
     let firstLength = document.getElementById('first-length')
     let secondLength = document.getElementById('second-length')
 
-    if(pipeLength.value && priceOfWastePer1m.value && orderedAmountSet1.value && orderedAmountSet2.value && firstLength.value && secondLength.value) {
+    if (pipeLength.value && priceOfWastePer1m.value && orderedAmountSet1.value && orderedAmountSet2.value && firstLength.value && secondLength.value) {
         let constants = {
-            'totalLength': Number (pipeLength.value),
-            'pricePer1mWaste': Number (priceOfWastePer1m.value),
-            'set1Amount': Number (orderedAmountSet1.value),
-            'set2Amount': Number (orderedAmountSet2.value),
-            'firstLength': Number (firstLength.value),
-            'secondLength': Number (secondLength.value)
+            'totalLength': Number(pipeLength.value),
+            'pricePer1mWaste': Number(priceOfWastePer1m.value),
+            'set1Amount': Number(orderedAmountSet1.value),
+            'set2Amount': Number(orderedAmountSet2.value),
+            'firstLength': Number(firstLength.value),
+            'secondLength': Number(secondLength.value)
         }
         return constants
     }
@@ -101,27 +77,27 @@ let saveConstants = () => {
 
 let calcMethods = () => {
 
-    let variables = { }
+    let variables = {}
 
-    if(constants.firstLength > constants.totalLength || constants.secondLength > constants.totalLength) {
+    if (constants.firstLength > constants.totalLength || constants.secondLength > constants.totalLength) {
         alert('Podane długości belek są błędne!')
         return
     }
 
-    for(let i = 1 ; i <= config.columns; ++i) {
-        let firstCutAmount = Number (document.getElementById('cut-first-method' + i).value)
-        let secondCutAmount = Number (document.getElementById('cut-second-method' + i).value)
+    for (let i = 1; i <= config.columns; ++i) {
+        let firstCutAmount = Number(document.getElementById('cut-first-method' + i).value)
+        let secondCutAmount = Number(document.getElementById('cut-second-method' + i).value)
 
-        let firstCuttingLength = firstCutAmount * constants.firstLength 
+        let firstCuttingLength = firstCutAmount * constants.firstLength
         let secondCuttingLength = secondCutAmount * constants.secondLength
 
-        if(firstCuttingLength + secondCuttingLength > constants.totalLength) {
+        if (firstCuttingLength + secondCuttingLength > constants.totalLength) {
             alert('Wprowadzono błędne sposoby cięcia! Za krótka belka do cięcia w podany sposób.')
             return
         }
 
-        let totalWaste = Number ((constants.totalLength - firstCuttingLength - secondCuttingLength).toFixed(2))
-        let totalCostWaste = Number ((constants.pricePer1mWaste * totalWaste).toFixed(2))
+        let totalWaste = Number((constants.totalLength - firstCuttingLength - secondCuttingLength).toFixed(2))
+        let totalCostWaste = Number((constants.pricePer1mWaste * totalWaste).toFixed(2))
 
         let cutWasteMeter = document.getElementById('cut-waste-meters' + i)
         let cutWasteCost = document.getElementById('cut-waste-cost' + i)
@@ -139,21 +115,25 @@ let calcMethods = () => {
             'wastePLN': totalCostWaste
         }
 
-        model2.variables[`x${i}`] = variable
+        model.variables[`x${i}`] = variable
     }
 
-    model2['constraints'] = {
-        'cutA': constants.set1Amount,
-        'cutB': constants.set2Amount
+    let cutA = {
+        'min': constants.set1Amount
     }
 
-    console.log(model2)
+    let cutB = {
+        'min': constants.set2Amount
+    }
+
+    model.constraints['cutA'] = cutA
+    model.constraints['cutB'] = cutB
 }
 
 document.getElementById('calc-wastes').addEventListener('click', () => {
     constants = saveConstants();
 
-    if(!constants) {
+    if (!constants) {
         alert('Uzupełnij początkowe dane!')
         return
     }
@@ -164,7 +144,23 @@ document.getElementById('calc-wastes').addEventListener('click', () => {
 }, false)
 
 document.getElementById('calc-model').addEventListener('click', () => {
+    let result = solver.Solve(model)
+    let resultText = 'Należy ciąć sposobami:<br>'
+    let resultDiv = document.getElementById('result')
 
+    if(!result.feasible) {
+        alert('Nie można wyznaczyć rozwiązania dla podanych wartości.')
+        resultText = 'Brak rozwiązania!'
+        resultDiv.innerHTML = resultText
+        return;
+    }
+
+    Object.keys(result).forEach((key) => {
+        if(key.startsWith('x')) {
+            resultText += `Sposobem ${key.substr(1)}: ${result[key]} razy<br>`
+        }
+    })
+    resultDiv.innerHTML = resultText
 }, false)
 },{"./config":2,"javascript-lp-solver":20}],2:[function(require,module,exports){
 module.exports = {

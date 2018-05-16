@@ -3,38 +3,12 @@ const solver = require('javascript-lp-solver')
 
 let constants
 
-let foo = {
-    [`bar` + 1]: `baz`
-};
-
-let model2 = {
+let model = {
     'optimize': 'wastePLN',
     'opType': 'min',
     'variables': {},
     'constraints': {}
 }
-
-let model = {
-    "optimize": "waste",
-    "opType": "min",
-    "constraints": {
-        "cutA": { "min": 2100 },
-        "cutB": { "min": 1200 }
-    },
-    "variables": {
-        "x1": { "cutA": 7, "cutB": 0, "waste": 0.3 },
-        "x2": { "cutA": 6, "cutB": 0, "waste": 1 },
-        "x3": { "cutA": 5, "cutB": 0, "waste": 1.7 },
-        "x4": { "cutA": 4, "cutB": 0, "waste": 2.4 },
-        "x5": { "cutA": 3, "cutB": 1, "waste": 0.6 },
-        "x6": { "cutA": 2, "cutB": 1, "waste": 1.3 },
-        "x7": { "cutA": 1, "cutB": 1, "waste": 2 },
-        "x8": { "cutA": 0, "cutB": 2, "waste": 0.2 }
-    }
-}
-
-console.log(model)
-// console.log(solver.Solve(model));
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -140,20 +114,19 @@ let calcMethods = () => {
             'wastePLN': totalCostWaste
         }
 
-        model2.variables[`x${i}`] = variable
+        model.variables[`x${i}`] = variable
     }
 
     let cutA = {
         'min': constants.set1Amount
     }
+
     let cutB = {
         'min': constants.set2Amount
     }
 
-    model2.constraints['cutA'] = cutA
-    model2.constraints['cutB'] = cutB
-
-    console.log(model2)
+    model.constraints['cutA'] = cutA
+    model.constraints['cutB'] = cutB
 }
 
 document.getElementById('calc-wastes').addEventListener('click', () => {
@@ -170,9 +143,21 @@ document.getElementById('calc-wastes').addEventListener('click', () => {
 }, false)
 
 document.getElementById('calc-model').addEventListener('click', () => {
-    debugger
-    let result = solver.Solve(model2)
+    let result = solver.Solve(model)
+    let resultText = 'Należy ciąć sposobami:<br>'
+    let resultDiv = document.getElementById('result')
 
-    console.log(result)
+    if(!result.feasible) {
+        alert('Nie można wyznaczyć rozwiązania dla podanych wartości.')
+        resultText = 'Brak rozwiązania!'
+        resultDiv.innerHTML = resultText
+        return;
+    }
 
+    Object.keys(result).forEach((key) => {
+        if(key.startsWith('x')) {
+            resultText += `Sposobem ${key.substr(1)}: ${result[key]} razy<br>`
+        }
+    })
+    resultDiv.innerHTML = resultText
 }, false)
